@@ -170,10 +170,7 @@ mod tests {
         assert_json_deserialize_eq(right, left);
     }
 
-    struct JSONSerdeTestCase<'a, T>
-    where
-        T: serde::Serialize + serde::Deserialize<'a> + PartialEq + Debug,
-    {
+    struct JSONSerdeTestCase<'a, T> {
         value: T,
         json: &'a str,
     }
