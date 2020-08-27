@@ -19,7 +19,7 @@ impl From<serde_json::Error> for Error {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum Color {
     #[serde(rename(serialize = "blue", deserialize = "blue"))]
     Blue,
@@ -41,7 +41,7 @@ pub enum Color {
     Toolbar,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum Icon {
     #[serde(rename(serialize = "fingerprint", deserialize = "fingerprint"))]
     Fingerprint,
@@ -71,7 +71,7 @@ pub enum Icon {
     Fence,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ContextualIdentity {
     pub cookie_store_id: String,
@@ -132,4 +132,159 @@ pub async fn query(name: Option<&str>) -> Result<Vec<ContextualIdentity>, Error>
         .await?
         .into_serde::<Vec<ContextualIdentity>>()
         .map_err(From::from)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::cmp::PartialEq;
+    use std::fmt::Debug;
+
+    fn assert_json_serialize_eq<'a, T>(left: &'a T, right: &'a str)
+    where
+        T: serde::Serialize + Debug,
+    {
+        assert_eq!(
+            serde_json::to_string(left).expect(&format!("failed to serialize {:?} to JSON", left)),
+            right
+        );
+    }
+
+    fn assert_json_deserialize_eq<'a, T>(left: &'a str, right: &'a T)
+    where
+        T: serde::Deserialize<'a> + PartialEq + Debug,
+    {
+        assert_eq!(
+            &serde_json::from_str::<T>(left)
+                .expect(&format!("failed to deserialize JSON {}", left)),
+            right
+        )
+    }
+
+    fn assert_json_serde_eq<'a, T>(left: &'a T, right: &'a str)
+    where
+        T: serde::Serialize + serde::Deserialize<'a> + PartialEq + Debug,
+    {
+        assert_json_serialize_eq(left, right);
+        assert_json_deserialize_eq(right, left);
+    }
+
+    struct JSONSerdeTestCase<'a, T>
+    where
+        T: serde::Serialize + serde::Deserialize<'a> + PartialEq + Debug,
+    {
+        value: T,
+        json: &'a str,
+    }
+
+    fn assert_json_serde_test_cases<'a, T, I>(tcs: I)
+    where
+        T: 'a + serde::Serialize + serde::Deserialize<'a> + PartialEq + Debug,
+        I: 'a + IntoIterator<Item = &'a JSONSerdeTestCase<'a, T>>,
+    {
+        for tc in tcs {
+            assert_json_serde_eq(&tc.value, tc.json);
+        }
+    }
+
+    #[test]
+    fn color_serde() {
+        assert_json_serde_test_cases(&[
+            JSONSerdeTestCase {
+                value: Color::Blue,
+                json: r#""blue""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Turquoise,
+                json: r#""turquoise""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Green,
+                json: r#""green""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Yellow,
+                json: r#""yellow""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Orange,
+                json: r#""orange""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Red,
+                json: r#""red""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Pink,
+                json: r#""pink""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Purple,
+                json: r#""purple""#,
+            },
+            JSONSerdeTestCase {
+                value: Color::Toolbar,
+                json: r#""toolbar""#,
+            },
+        ])
+    }
+
+    #[test]
+    fn icon_serde() {
+        assert_json_serde_test_cases(&[
+            JSONSerdeTestCase {
+                value: Icon::Fingerprint,
+                json: r#""fingerprint""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Briefcase,
+                json: r#""briefcase""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Dollar,
+                json: r#""dollar""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Cart,
+                json: r#""cart""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Circle,
+                json: r#""circle""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Gift,
+                json: r#""gift""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Vacation,
+                json: r#""vacation""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Food,
+                json: r#""food""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Fruit,
+                json: r#""fruit""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Pet,
+                json: r#""pet""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Tree,
+                json: r#""tree""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Chill,
+                json: r#""chill""#,
+            },
+            JSONSerdeTestCase {
+                value: Icon::Fence,
+                json: r#""fence""#,
+            },
+        ])
+    }
 }
