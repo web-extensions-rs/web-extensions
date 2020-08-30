@@ -1,4 +1,6 @@
-use crate::{js_from_serde, object_from_js, Error, EventTarget};
+use crate::{
+    js_from_serde, object_from_js, serde_from_js_result, Error, EventTarget,
+};
 
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -60,24 +62,8 @@ pub struct Tab {
     pub window_id: i32,
 }
 
-impl TryFrom<JsValue> for Tab {
-    type Error = serde_json::Error;
-
-    fn try_from(v: JsValue) -> Result<Self, Self::Error> {
-        v.into_serde()
-    }
-}
-
-impl TryFrom<Result<JsValue, JsValue>> for Tab {
-    type Error = Error;
-
-    fn try_from(v: Result<JsValue, JsValue>) -> Result<Self, Self::Error> {
-        Tab::try_from(v?).map_err(Error::JSONDeserializationError)
-    }
-}
-
 pub async fn get(tab_id: i32) -> Result<Tab, Error> {
-    Tab::try_from(tabs().get(tab_id).await)
+    serde_from_js_result(tabs().get(tab_id).await)
 }
 
 #[derive(Debug, Serialize)]
@@ -103,11 +89,11 @@ pub struct QueryDetails<'a> {
 }
 
 pub async fn query(details: &QueryDetails<'_>) -> Result<Vec<Tab>, Error> {
-    tabs()
-        .query(object_from_js(&js_from_serde(details)?)?)
-        .await?
-        .into_serde()
-        .map_err(Error::JSONDeserializationError)
+    serde_from_js_result(
+        tabs()
+            .query(object_from_js(&js_from_serde(details)?)?)
+            .await,
+    )
 }
 
 #[derive(Debug, Deserialize)]
