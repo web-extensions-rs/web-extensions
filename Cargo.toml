@@ -1,11 +1,11 @@
 [package]
-name = "contextual-identities"
+name = "web-extensions"
 version = "0.1.0"
 authors = ["Roman Volosatovs <rvolosatovs@riseup.net>"]
 edition = "2018"
-description = "This crate provides wrappers around contextualIdentities Web API"
-repository = "https://github.com/rvolosatovs/contextual-identities"
-license = "MIT OR Apache-2.0"
+description = "This crate provides wrappers around WebExtensions API"
+repository = "https://github.com/rvolosatovs/web-extensions"
+license = "MIT"
 keywords = ["api", "serde", "wasm", "web", "webassembly"]
 categories = ["api-bindings", "wasm"]
 
@@ -13,13 +13,13 @@ categories = ["api-bindings", "wasm"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-contextual-identities-sys = "0.1.1"
 js-sys = "0.3.44"
 serde = { version = "1.0.115", features = ["derive"] }
 serde_derive = "1.0.115"
-wasm-bindgen = { version = "0.2.67", features = ["serde-serialize"] }
-wasm-bindgen-futures = "0.4.17"
 serde_json = "1.0.57"
+wasm-bindgen = { version = "0.2.67", features = ["serde-serialize", "nightly"] }
+wasm-bindgen-futures = "0.4.17"
+web-extensions-sys = { version = "0.1.0" }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
