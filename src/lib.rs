@@ -6,6 +6,8 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::marker::Unsize;
 use wasm_bindgen::closure::WasmClosure;
+use wasm_bindgen::convert::FromWasmAbi;
+use wasm_bindgen::describe::WasmDescribe;
 use wasm_bindgen::prelude::*;
 
 pub mod contextual_identities;
@@ -55,6 +57,51 @@ where
 {
     v?.into_serde().map_err(Error::JSONDeserializationError)
 }
+
+#[derive(Debug)]
+pub enum FromWasmAbiResult<T, E> {
+    /// Contains the success value
+    Ok(T),
+
+    /// Contains the error value
+    Err(E),
+}
+
+impl<T, E> From<FromWasmAbiResult<T, E>> for Result<T, E> {
+    fn from(result: FromWasmAbiResult<T, E>) -> Self {
+        match result {
+            FromWasmAbiResult::Ok(v) => Ok(v),
+            FromWasmAbiResult::Err(e) => Err(e),
+        }
+    }
+}
+
+impl<T, E> From<Result<T, E>> for FromWasmAbiResult<T, E> {
+    fn from(result: Result<T, E>) -> Self {
+        match result {
+            Ok(v) => Self::Ok(v),
+            Err(e) => Self::Err(e),
+        }
+    }
+}
+
+pub type SerdeFromWasmAbiResult<T> = FromWasmAbiResult<T, serde_json::Error>;
+
+impl<T> WasmDescribe for SerdeFromWasmAbiResult<T> {
+    #[inline]
+    fn describe() {
+        JsValue::describe()
+    }
+}
+impl<T: for<'a> serde::Deserialize<'a>> FromWasmAbi for SerdeFromWasmAbiResult<T> {
+    type Abi = u32;
+
+    #[inline]
+    unsafe fn from_abi(js: u32) -> Self {
+        JsValue::from_abi(js).into_serde().into()
+    }
+}
+
 #[cfg(test)]
 pub mod test_util {
     use std::cmp::PartialEq;
