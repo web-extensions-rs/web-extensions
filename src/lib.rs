@@ -49,6 +49,12 @@ fn object_from_js(v: &JsValue) -> Result<&Object, Error> {
     Object::try_from(v).ok_or(Error::ObjectConversionError)
 }
 
+fn serde_from_js_result<T>(v: Result<JsValue, JsValue>) -> Result<T, Error>
+where
+    T: for<'a> serde::Deserialize<'a>,
+{
+    v?.into_serde().map_err(Error::JSONDeserializationError)
+}
 #[cfg(test)]
 pub mod test_util {
     use std::cmp::PartialEq;
