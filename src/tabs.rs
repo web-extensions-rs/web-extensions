@@ -1,5 +1,5 @@
 use crate::{
-    js_from_serde, object_from_js, serde_from_js_result, Error, EventTarget,
+    js_from_serde, object_from_js, serde_from_js_result, Error, EventTarget, SerdeFromWasmAbiResult,
 };
 
 use serde::{Deserialize, Serialize};
@@ -104,7 +104,7 @@ pub struct ActiveInfo {
     pub window_id: i32,
 }
 
-pub fn on_activated() -> EventTarget<ActiveInfo> {
+pub fn on_activated() -> EventTarget<SerdeFromWasmAbiResult<ActiveInfo>> {
     EventTarget(tabs().on_activated(), PhantomData)
 }
 
@@ -115,7 +115,7 @@ pub struct AttachInfo {
     pub new_position: i32,
 }
 
-pub fn on_attached() -> EventTarget<(i32, AttachInfo)> {
+pub fn on_attached() -> EventTarget<(i32, SerdeFromWasmAbiResult<AttachInfo>)> {
     EventTarget(tabs().on_attached(), PhantomData)
 }
 
@@ -130,7 +130,7 @@ pub struct DetachInfo {
     pub old_position: i32,
 }
 
-pub fn on_detached() -> EventTarget<(i32, DetachInfo)> {
+pub fn on_detached() -> EventTarget<(i32, SerdeFromWasmAbiResult<DetachInfo>)> {
     EventTarget(tabs().on_detached(), PhantomData)
 }
 
@@ -141,7 +141,7 @@ pub struct HighlightInfo {
     pub tab_ids: Vec<i32>,
 }
 
-pub fn on_highlighted() -> EventTarget<HighlightInfo> {
+pub fn on_highlighted() -> EventTarget<SerdeFromWasmAbiResult<HighlightInfo>> {
     EventTarget(tabs().on_highlighted(), PhantomData)
 }
 
@@ -153,7 +153,7 @@ pub struct MoveInfo {
     pub to_index: i32,
 }
 
-pub fn on_moved() -> EventTarget<(i32, MoveInfo)> {
+pub fn on_moved() -> EventTarget<(i32, SerdeFromWasmAbiResult<MoveInfo>)> {
     EventTarget(tabs().on_moved(), PhantomData)
 }
 
@@ -164,7 +164,7 @@ pub struct RemoveInfo {
     pub is_window_closing: bool,
 }
 
-pub fn on_removed() -> EventTarget<(i32, RemoveInfo)> {
+pub fn on_removed() -> EventTarget<(i32, SerdeFromWasmAbiResult<RemoveInfo>)> {
     EventTarget(tabs().on_removed(), PhantomData)
 }
 
@@ -179,7 +179,11 @@ pub struct ChangeInfo {
     pub url: Option<String>,
 }
 
-pub fn on_updated() -> EventTarget<(i32, ChangeInfo, Tab)> {
+pub fn on_updated() -> EventTarget<(
+    i32,
+    SerdeFromWasmAbiResult<ChangeInfo>,
+    SerdeFromWasmAbiResult<Tab>,
+)> {
     EventTarget(tabs().on_updated(), PhantomData)
 }
 
@@ -189,7 +193,7 @@ pub struct ZoomChangeInfo {
     // TODO: Add more fields from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onZoomChange#ZoomChangeInfo
 }
 
-pub fn on_zoom_change() -> EventTarget<ZoomChangeInfo> {
+pub fn on_zoom_change() -> EventTarget<SerdeFromWasmAbiResult<ZoomChangeInfo>> {
     EventTarget(tabs().on_zoom_change(), PhantomData)
 }
 
