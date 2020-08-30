@@ -80,7 +80,7 @@ pub async fn get(tab_id: i32) -> Result<Tab, Error> {
     Tab::try_from(tabs().get(tab_id).await)
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryDetails<'a> {
     pub active: Option<bool>,
@@ -110,7 +110,7 @@ pub async fn query(details: &QueryDetails<'_>) -> Result<Vec<Tab>, Error> {
         .map_err(Error::JSONDeserializationError)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveInfo {
     pub previous_tab_id: i32,
@@ -122,7 +122,7 @@ pub fn on_activated() -> EventTarget<ActiveInfo> {
     EventTarget(tabs().on_activated(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AttachInfo {
     pub new_window_id: i32,
@@ -137,7 +137,7 @@ pub fn on_created() -> EventTarget<Tab> {
     EventTarget(tabs().on_created(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DetachInfo {
     pub old_window_id: i32,
@@ -148,7 +148,7 @@ pub fn on_detached() -> EventTarget<(i32, DetachInfo)> {
     EventTarget(tabs().on_detached(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HighlightInfo {
     pub window_id: i32,
@@ -159,7 +159,7 @@ pub fn on_highlighted() -> EventTarget<HighlightInfo> {
     EventTarget(tabs().on_highlighted(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MoveInfo {
     pub window_id: i32,
@@ -171,7 +171,7 @@ pub fn on_moved() -> EventTarget<(i32, MoveInfo)> {
     EventTarget(tabs().on_moved(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveInfo {
     pub window_id: i32,
@@ -186,7 +186,7 @@ pub fn on_replaced() -> EventTarget<(i32, i32)> {
     EventTarget(tabs().on_replaced(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ChangeInfo {
     // TODO: Add more fields from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onUpdated#changeInfo
@@ -197,7 +197,7 @@ pub fn on_updated() -> EventTarget<(i32, ChangeInfo, Tab)> {
     EventTarget(tabs().on_updated(), PhantomData)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ZoomChangeInfo {
     // TODO: Add more fields from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onZoomChange#ZoomChangeInfo
