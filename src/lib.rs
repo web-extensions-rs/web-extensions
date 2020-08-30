@@ -41,11 +41,11 @@ impl From<JsValue> for Error {
     }
 }
 
-fn js_from_serde<'a, T: serde::Serialize>(v: &'a T) -> Result<JsValue, Error> {
+fn js_from_serde<T: serde::Serialize>(v: &T) -> Result<JsValue, Error> {
     JsValue::from_serde(v).map_err(Error::JSONSerializationError)
 }
 
-fn object_from_js<'a>(v: &'a JsValue) -> Result<&'a Object, Error> {
+fn object_from_js(v: &JsValue) -> Result<&Object, Error> {
     Object::try_from(v).ok_or(Error::ObjectConversionError)
 }
 
