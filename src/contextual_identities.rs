@@ -1,4 +1,4 @@
-use crate::{js_from_serde, object_from_js, Error};
+use crate::{js_from_serde, object_from_js, serde_from_js_result, Error};
 
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -72,22 +72,6 @@ pub struct ContextualIdentity {
     pub name: String,
 }
 
-impl TryFrom<JsValue> for ContextualIdentity {
-    type Error = serde_json::Error;
-
-    fn try_from(v: JsValue) -> Result<Self, Self::Error> {
-        v.into_serde()
-    }
-}
-
-impl TryFrom<Result<JsValue, JsValue>> for ContextualIdentity {
-    type Error = Error;
-
-    fn try_from(v: Result<JsValue, JsValue>) -> Result<Self, Self::Error> {
-        ContextualIdentity::try_from(v?).map_err(Error::JSONDeserializationError)
-    }
-}
-
 #[derive(Serialize)]
 pub struct CreateDetails<'a> {
     pub name: &'a str,
@@ -96,7 +80,7 @@ pub struct CreateDetails<'a> {
 }
 
 pub async fn create(details: &CreateDetails<'_>) -> Result<ContextualIdentity, Error> {
-    ContextualIdentity::try_from(
+    serde_from_js_result(
         contextual_identities()
             .create(object_from_js(&js_from_serde(details)?)?)
             .await,
@@ -104,7 +88,7 @@ pub async fn create(details: &CreateDetails<'_>) -> Result<ContextualIdentity, E
 }
 
 pub async fn get(cookie_store_id: &str) -> Result<ContextualIdentity, Error> {
-    ContextualIdentity::try_from(contextual_identities().get(cookie_store_id).await)
+    serde_from_js_result(contextual_identities().get(cookie_store_id).await)
 }
 
 #[derive(Serialize)]
@@ -113,15 +97,15 @@ pub struct QueryDetails<'a> {
 }
 
 pub async fn query(details: &QueryDetails<'_>) -> Result<Vec<ContextualIdentity>, Error> {
-    contextual_identities()
-        .query(object_from_js(&js_from_serde(details)?)?)
-        .await?
-        .into_serde()
-        .map_err(Error::JSONDeserializationError)
+    serde_from_js_result(
+        contextual_identities()
+            .query(object_from_js(&js_from_serde(details)?)?)
+            .await,
+    )
 }
 
 pub async fn remove(cookie_store_id: &str) -> Result<ContextualIdentity, Error> {
-    ContextualIdentity::try_from(contextual_identities().remove(cookie_store_id).await)
+    serde_from_js_result(contextual_identities().remove(cookie_store_id).await)
 }
 
 #[derive(Serialize)]
@@ -135,7 +119,7 @@ pub async fn update(
     cookie_store_id: &str,
     details: &UpdateDetails<'_>,
 ) -> Result<ContextualIdentity, Error> {
-    ContextualIdentity::try_from(
+    serde_from_js_result(
         contextual_identities()
             .update(cookie_store_id, object_from_js(&js_from_serde(details)?)?)
             .await,
