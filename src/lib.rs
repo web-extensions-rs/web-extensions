@@ -1,14 +1,6 @@
-#![feature(unsize)]
-#![feature(unboxed_closures)]
-
 use js_sys::Object;
-use std::fmt::Debug;
-use std::marker::PhantomData;
-use std::marker::Unsize;
-use wasm_bindgen::closure::WasmClosure;
-use wasm_bindgen::convert::FromWasmAbi;
-use wasm_bindgen::describe::WasmDescribe;
-use wasm_bindgen::prelude::*;
+use std::{fmt::Debug, marker::PhantomData};
+use wasm_bindgen::{convert::FromWasmAbi, describe::WasmDescribe, prelude::*};
 
 pub mod contextual_identities;
 pub mod tabs;
@@ -18,16 +10,6 @@ mod event_listener;
 pub use event_listener::*;
 
 pub struct EventTarget<A>(web_extensions_sys::EventTarget, PhantomData<A>);
-
-impl<A> EventTarget<A> {
-    pub fn add_listener<L, W>(&self, listener: L) -> EventListener<W>
-    where
-        W: ?Sized + WasmClosure + FnMut<A>,
-        L: FnMut<A> + Unsize<W> + 'static,
-    {
-        EventListener::new(&self.0, listener)
-    }
-}
 
 #[derive(Debug)]
 pub enum Error {

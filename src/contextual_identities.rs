@@ -1,15 +1,13 @@
 use crate::{js_from_serde, object_from_js, serde_from_js_result, Error};
 
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
-use wasm_bindgen::prelude::*;
 use web_extensions_sys::{browser, ContextualIdentities};
 
 fn contextual_identities() -> ContextualIdentities {
     browser.contextual_identities()
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Color {
     #[serde(rename(serialize = "blue", deserialize = "blue"))]
     Blue,
@@ -31,7 +29,7 @@ pub enum Color {
     Toolbar,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Icon {
     #[serde(rename(serialize = "fingerprint", deserialize = "fingerprint"))]
     Fingerprint,
@@ -61,7 +59,7 @@ pub enum Icon {
     Fence,
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ContextualIdentity {
     pub cookie_store_id: String,
