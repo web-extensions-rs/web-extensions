@@ -1,17 +1,15 @@
 use crate::{
     js_from_serde, object_from_js, serde_from_js_result, Error, EventTarget, SerdeFromWasmAbiResult,
 };
-
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 use std::marker::PhantomData;
-use wasm_bindgen::prelude::*;
-use web_extensions_sys::{browser, Tabs};
+use wasm_bindgen::closure::Closure;
+use web_extensions_sys::{self as sys, browser, Tabs};
 
 fn tabs() -> Tabs {
     browser.tabs()
 }
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Status {
     #[serde(rename(serialize = "loading", deserialize = "loading"))]
     Loading,
@@ -19,7 +17,7 @@ pub enum Status {
     Complete,
 }
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 pub enum WindowType {
     #[serde(rename(serialize = "normal"))]
     Normal,
@@ -104,8 +102,34 @@ pub struct ActiveInfo {
     pub window_id: i32,
 }
 
-pub fn on_activated() -> EventTarget<SerdeFromWasmAbiResult<ActiveInfo>> {
-    EventTarget(tabs().on_activated(), PhantomData)
+pub struct OnActivated(sys::EventTarget);
+pub struct OnActivatedEventListener<'a>(crate::EventListener<'a, dyn FnMut(sys::TabActiveInfo)>);
+
+impl OnActivatedEventListener<'_> {
+    pub fn forget(self) {
+        self.0.forget()
+    }
+}
+
+pub fn on_activated() -> OnActivated {
+    OnActivated(tabs().on_activated())
+}
+
+impl OnActivated {
+    pub fn add_listener<L>(&self, mut listener: L) -> OnActivatedEventListener
+    where
+        L: FnMut(ActiveInfo) + 'static,
+    {
+        let listener = Closure::new(move |info: sys::TabActiveInfo| {
+            let info = ActiveInfo {
+                previous_tab_id: info.previous_tab_id().unwrap(),
+                tab_id: info.tab_id(),
+                window_id: info.window_id(),
+            };
+            listener(info)
+        });
+        OnActivatedEventListener(crate::EventListener::raw_new(&self.0, listener))
+    }
 }
 
 #[derive(Debug, Deserialize)]

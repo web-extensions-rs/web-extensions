@@ -1,8 +1,11 @@
 [package]
 name = "web-extensions"
 version = "0.1.0"
-authors = ["Roman Volosatovs <rvolosatovs@riseup.net>"]
-edition = "2018"
+authors = [
+  "Roman Volosatovs <rvolosatovs@riseup.net>",
+  "Markus Kohlhase <markus.kohlhase@slowtec.de>",
+]
+edition = "2021"
 description = "This crate provides wrappers around WebExtensions API"
 repository = "https://github.com/rvolosatovs/web-extensions"
 license = "MIT"
@@ -13,13 +16,13 @@ categories = ["api-bindings", "wasm"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-js-sys = "0.3.44"
-serde = { version = "1.0.115", features = ["derive"] }
-serde_derive = "1.0.115"
-serde_json = "1.0.57"
-wasm-bindgen = { version = "0.2.67", features = ["serde-serialize", "nightly"] }
-wasm-bindgen-futures = "0.4.17"
-web-extensions-sys = { version = "0.1.0" }
+js-sys = "0.3.59"
+serde = { version = "1.0.142", features = ["derive"] }
+serde_derive = "1.0.142"
+serde_json = "1.0.83"
+wasm-bindgen = { version = "0.2.82", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4.32"
+web-extensions-sys = "0.2.0"
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.13"
+wasm-bindgen-test = "0.3.32"
