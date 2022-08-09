@@ -1,3 +1,5 @@
+//! Wrapper for the [`chrome.tabs` API](https://developer.chrome.com/docs/extensions/reference/tabs/).
+
 use crate::{
     util::{js_from_serde, object_from_js, serde_from_js_result},
     Error, EventTarget, SerdeFromWasmAbiResult,
@@ -5,11 +7,106 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
 use wasm_bindgen::closure::Closure;
-use web_extensions_sys::{self as sys, browser, Tabs};
+use web_extensions_sys as sys;
 
-fn tabs() -> Tabs {
-    browser.tabs()
+fn tabs() -> sys::Tabs {
+    sys::browser.tabs()
 }
+
+// ## Methods ##
+//
+// https://developer.chrome.com/docs/extensions/reference/tabs/#method
+
+pub async fn get(tab_id: i32) -> Result<Tab, Error> {
+    serde_from_js_result(tabs().get(tab_id).await)
+}
+
+pub async fn query(details: &QueryDetails<'_>) -> Result<Vec<Tab>, Error> {
+    serde_from_js_result(
+        tabs()
+            .query(object_from_js(&js_from_serde(details)?)?)
+            .await,
+    )
+}
+
+// ## Events ##
+//
+// https://developer.chrome.com/docs/extensions/reference/tabs/#event/
+
+pub fn on_activated() -> OnActivated {
+    OnActivated(tabs().on_activated())
+}
+
+pub struct OnActivated(sys::EventTarget);
+pub struct OnActivatedEventListener<'a>(crate::EventListener<'a, dyn FnMut(sys::TabActiveInfo)>);
+
+impl OnActivatedEventListener<'_> {
+    pub fn forget(self) {
+        self.0.forget()
+    }
+}
+
+impl OnActivated {
+    pub fn add_listener<L>(&self, mut listener: L) -> OnActivatedEventListener
+    where
+        L: FnMut(ActiveInfo) + 'static,
+    {
+        let listener = Closure::new(move |info: sys::TabActiveInfo| {
+            let info = ActiveInfo {
+                previous_tab_id: info.previous_tab_id().unwrap(),
+                tab_id: info.tab_id(),
+                window_id: info.window_id(),
+            };
+            listener(info)
+        });
+        OnActivatedEventListener(crate::EventListener::raw_new(&self.0, listener))
+    }
+}
+
+pub fn on_attached() -> EventTarget<(i32, SerdeFromWasmAbiResult<AttachInfo>)> {
+    EventTarget(tabs().on_attached(), PhantomData)
+}
+
+pub fn on_created() -> EventTarget<Tab> {
+    EventTarget(tabs().on_created(), PhantomData)
+}
+
+pub fn on_moved() -> EventTarget<(i32, SerdeFromWasmAbiResult<MoveInfo>)> {
+    EventTarget(tabs().on_moved(), PhantomData)
+}
+
+pub fn on_zoom_change() -> EventTarget<SerdeFromWasmAbiResult<ZoomChangeInfo>> {
+    EventTarget(tabs().on_zoom_change(), PhantomData)
+}
+
+pub fn on_detached() -> EventTarget<(i32, SerdeFromWasmAbiResult<DetachInfo>)> {
+    EventTarget(tabs().on_detached(), PhantomData)
+}
+
+pub fn on_highlighted() -> EventTarget<SerdeFromWasmAbiResult<HighlightInfo>> {
+    EventTarget(tabs().on_highlighted(), PhantomData)
+}
+
+pub fn on_removed() -> EventTarget<(i32, SerdeFromWasmAbiResult<RemoveInfo>)> {
+    EventTarget(tabs().on_removed(), PhantomData)
+}
+
+pub fn on_replaced() -> EventTarget<(i32, i32)> {
+    EventTarget(tabs().on_replaced(), PhantomData)
+}
+
+pub fn on_updated() -> EventTarget<(
+    i32,
+    SerdeFromWasmAbiResult<ChangeInfo>,
+    SerdeFromWasmAbiResult<Tab>,
+)> {
+    EventTarget(tabs().on_updated(), PhantomData)
+}
+
+// ## Types ##
+//
+// https://developer.chrome.com/docs/extensions/reference/tabs/#type
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Status {
     #[serde(rename(serialize = "loading", deserialize = "loading"))]
@@ -61,10 +158,6 @@ pub struct Tab {
     pub window_id: i32,
 }
 
-pub async fn get(tab_id: i32) -> Result<Tab, Error> {
-    serde_from_js_result(tabs().get(tab_id).await)
-}
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryDetails<'a> {
@@ -87,50 +180,12 @@ pub struct QueryDetails<'a> {
     pub window_type: Option<WindowType>,
 }
 
-pub async fn query(details: &QueryDetails<'_>) -> Result<Vec<Tab>, Error> {
-    serde_from_js_result(
-        tabs()
-            .query(object_from_js(&js_from_serde(details)?)?)
-            .await,
-    )
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveInfo {
     pub previous_tab_id: i32,
     pub tab_id: i32,
     pub window_id: i32,
-}
-
-pub struct OnActivated(sys::EventTarget);
-pub struct OnActivatedEventListener<'a>(crate::EventListener<'a, dyn FnMut(sys::TabActiveInfo)>);
-
-impl OnActivatedEventListener<'_> {
-    pub fn forget(self) {
-        self.0.forget()
-    }
-}
-
-pub fn on_activated() -> OnActivated {
-    OnActivated(tabs().on_activated())
-}
-
-impl OnActivated {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnActivatedEventListener
-    where
-        L: FnMut(ActiveInfo) + 'static,
-    {
-        let listener = Closure::new(move |info: sys::TabActiveInfo| {
-            let info = ActiveInfo {
-                previous_tab_id: info.previous_tab_id().unwrap(),
-                tab_id: info.tab_id(),
-                window_id: info.window_id(),
-            };
-            listener(info)
-        });
-        OnActivatedEventListener(crate::EventListener::raw_new(&self.0, listener))
-    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -140,14 +195,6 @@ pub struct AttachInfo {
     pub new_position: i32,
 }
 
-pub fn on_attached() -> EventTarget<(i32, SerdeFromWasmAbiResult<AttachInfo>)> {
-    EventTarget(tabs().on_attached(), PhantomData)
-}
-
-pub fn on_created() -> EventTarget<Tab> {
-    EventTarget(tabs().on_created(), PhantomData)
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DetachInfo {
@@ -155,19 +202,11 @@ pub struct DetachInfo {
     pub old_position: i32,
 }
 
-pub fn on_detached() -> EventTarget<(i32, SerdeFromWasmAbiResult<DetachInfo>)> {
-    EventTarget(tabs().on_detached(), PhantomData)
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HighlightInfo {
     pub window_id: i32,
     pub tab_ids: Vec<i32>,
-}
-
-pub fn on_highlighted() -> EventTarget<SerdeFromWasmAbiResult<HighlightInfo>> {
-    EventTarget(tabs().on_highlighted(), PhantomData)
 }
 
 #[derive(Debug, Deserialize)]
@@ -178,23 +217,11 @@ pub struct MoveInfo {
     pub to_index: i32,
 }
 
-pub fn on_moved() -> EventTarget<(i32, SerdeFromWasmAbiResult<MoveInfo>)> {
-    EventTarget(tabs().on_moved(), PhantomData)
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveInfo {
     pub window_id: i32,
     pub is_window_closing: bool,
-}
-
-pub fn on_removed() -> EventTarget<(i32, SerdeFromWasmAbiResult<RemoveInfo>)> {
-    EventTarget(tabs().on_removed(), PhantomData)
-}
-
-pub fn on_replaced() -> EventTarget<(i32, i32)> {
-    EventTarget(tabs().on_replaced(), PhantomData)
 }
 
 #[derive(Debug, Deserialize)]
@@ -204,22 +231,10 @@ pub struct ChangeInfo {
     pub url: Option<String>,
 }
 
-pub fn on_updated() -> EventTarget<(
-    i32,
-    SerdeFromWasmAbiResult<ChangeInfo>,
-    SerdeFromWasmAbiResult<Tab>,
-)> {
-    EventTarget(tabs().on_updated(), PhantomData)
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ZoomChangeInfo {
     // TODO: Add more fields from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onZoomChange#ZoomChangeInfo
-}
-
-pub fn on_zoom_change() -> EventTarget<SerdeFromWasmAbiResult<ZoomChangeInfo>> {
-    EventTarget(tabs().on_zoom_change(), PhantomData)
 }
 
 #[cfg(test)]
