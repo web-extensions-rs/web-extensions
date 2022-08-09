@@ -3,15 +3,15 @@ use wasm_bindgen::{convert::FromWasmAbi, describe::WasmDescribe, prelude::*};
 
 #[derive(Debug)]
 pub enum Error {
-    JsError(JsValue),
-    JSONDeserializationError(serde_json::Error),
-    JSONSerializationError(serde_json::Error),
-    ObjectConversionError,
+    Js(JsValue),
+    JsonDeserialization(serde_json::Error),
+    JsonSerialization(serde_json::Error),
+    ObjectConversion,
 }
 
 impl From<JsValue> for Error {
     fn from(err: JsValue) -> Self {
-        Self::JsError(err)
+        Self::Js(err)
     }
 }
 
