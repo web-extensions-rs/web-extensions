@@ -2,12 +2,14 @@ use js_sys::Object;
 use std::{fmt::Debug, marker::PhantomData};
 use wasm_bindgen::{convert::FromWasmAbi, describe::WasmDescribe, prelude::*};
 
-pub mod contextual_identities;
-pub mod tabs;
+#[cfg(test)]
+mod test_util;
 
 mod event_listener;
-
 pub use event_listener::*;
+
+pub mod contextual_identities;
+pub mod tabs;
 
 pub struct EventTarget<A>(web_extensions_sys::EventTarget, PhantomData<A>);
 
@@ -81,75 +83,5 @@ impl<T: for<'a> serde::Deserialize<'a>> FromWasmAbi for SerdeFromWasmAbiResult<T
     #[inline]
     unsafe fn from_abi(js: u32) -> Self {
         JsValue::from_abi(js).into_serde().into()
-    }
-}
-
-#[cfg(test)]
-pub mod test_util {
-    use std::cmp::PartialEq;
-    use std::fmt::Debug;
-
-    pub fn assert_json_serialize_eq<'a, T>(left: &'a T, right: &'a str)
-    where
-        T: serde::Serialize + Debug,
-    {
-        assert_eq!(
-            serde_json::to_string(left).expect(&format!("failed to serialize {:?} to JSON", left)),
-            right
-        );
-    }
-
-    pub fn assert_json_deserialize_eq<'a, T>(left: &'a str, right: &'a T)
-    where
-        T: serde::Deserialize<'a> + PartialEq + Debug,
-    {
-        assert_eq!(
-            &serde_json::from_str::<T>(left)
-                .expect(&format!("failed to deserialize JSON {}", left)),
-            right
-        )
-    }
-
-    pub fn assert_json_serde_eq<'a, T>(left: &'a T, right: &'a str)
-    where
-        T: serde::Serialize + serde::Deserialize<'a> + PartialEq + Debug,
-    {
-        assert_json_serialize_eq(left, right);
-        assert_json_deserialize_eq(right, left);
-    }
-
-    pub struct JSONSerdeTestCase<'a, T> {
-        pub value: T,
-        pub json: &'a str,
-    }
-
-    pub fn assert_json_serialize_test_cases<'a, T, I>(tcs: I)
-    where
-        T: 'a + serde::Serialize + PartialEq + Debug,
-        I: 'a + IntoIterator<Item = &'a JSONSerdeTestCase<'a, T>>,
-    {
-        for tc in tcs {
-            assert_json_serialize_eq(&tc.value, tc.json);
-        }
-    }
-
-    pub fn assert_json_deserialize_test_cases<'a, T, I>(tcs: I)
-    where
-        T: 'a + serde::Deserialize<'a> + PartialEq + Debug,
-        I: 'a + IntoIterator<Item = &'a JSONSerdeTestCase<'a, T>>,
-    {
-        for tc in tcs {
-            assert_json_deserialize_eq(tc.json, &tc.value);
-        }
-    }
-
-    pub fn assert_json_serde_test_cases<'a, T, I>(tcs: I)
-    where
-        T: 'a + serde::Serialize + serde::Deserialize<'a> + PartialEq + Debug,
-        I: 'a + IntoIterator<Item = &'a JSONSerdeTestCase<'a, T>>,
-    {
-        for tc in tcs {
-            assert_json_serde_eq(&tc.value, tc.json);
-        }
     }
 }
