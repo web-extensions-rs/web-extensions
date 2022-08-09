@@ -1,5 +1,6 @@
 use crate::{
-    js_from_serde, object_from_js, serde_from_js_result, Error, EventTarget, SerdeFromWasmAbiResult,
+    util::{js_from_serde, object_from_js, serde_from_js_result},
+    Error, EventTarget, SerdeFromWasmAbiResult,
 };
 use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
