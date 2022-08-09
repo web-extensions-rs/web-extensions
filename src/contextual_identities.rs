@@ -1,4 +1,7 @@
-use crate::{js_from_serde, object_from_js, serde_from_js_result, Error};
+use crate::{
+    util::{js_from_serde, object_from_js, serde_from_js_result},
+    Error,
+};
 
 use serde::{Deserialize, Serialize};
 use web_extensions_sys::{browser, ContextualIdentities};
