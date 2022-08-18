@@ -16,3 +16,10 @@ where
 {
     v?.into_serde().map_err(Error::JsonDeserialization)
 }
+
+pub(crate) fn serde_from_js<T>(v: JsValue) -> Result<T, Error>
+where
+    T: for<'a> serde::Deserialize<'a>,
+{
+    v.into_serde().map_err(Error::JsonDeserialization)
+}
