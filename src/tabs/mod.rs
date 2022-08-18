@@ -68,3 +68,31 @@ pub async fn query(details: &QueryDetails<'_>) -> Result<Vec<Tab>, Error> {
     let result = tabs().query(object_from_js(&js_details)?).await;
     serde_from_js_result(result)
 }
+
+/// <https://developer.chrome.com/docs/extensions/reference/tabs/#method-sendMessage>
+pub async fn send_message<T>(tab_id: TabId, message: &T) -> Result<(), Error>
+where
+    T: Serialize,
+{
+    let js_message = js_from_serde(message)?;
+    let options = None;
+    tabs()
+        .send_message(tab_id.0, &js_message, options)
+        .await
+        .map(|_| ())?;
+    Ok(())
+}
+
+/// <https://developer.chrome.com/docs/extensions/reference/tabs/#method-create>
+pub async fn create(props: CreateProperties<'_>) -> Result<Tab, Error> {
+    let js_props = js_from_serde(&props)?;
+    let result = sys::browser.tabs().create(object_from_js(&js_props)?).await;
+    serde_from_js_result(result)
+}
+
+/// Information necessary to open a new tab.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateProperties<'a> {
+    pub active: bool,
+    pub url: &'a str,
+}
