@@ -10,6 +10,7 @@ pub async fn search(query: &Query<'_>) -> Result<Vec<BookmarkTreeNode>, Error> {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Query<'a> {
     /// A string of words and quoted phrases that are matched against bookmark URLs and titles.
     pub query: Option<&'a str>,
