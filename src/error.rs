@@ -1,11 +1,15 @@
-use std::fmt::Debug;
+use thiserror::Error;
 use wasm_bindgen::{convert::FromWasmAbi, describe::WasmDescribe, prelude::*};
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum Error {
+    #[error("JavaScript error: {0:?}")]
     Js(JsValue),
+    #[error(transparent)]
     JsonDeserialization(serde_json::Error),
+    #[error(transparent)]
     JsonSerialization(serde_json::Error),
+    #[error("Unable to convert JS value to an JS object")]
     ObjectConversion,
 }
 
