@@ -83,7 +83,7 @@ where
 /// <https://developer.chrome.com/docs/extensions/reference/tabs/#method-create>
 pub async fn create(props: CreateProperties<'_>) -> Result<Tab, Error> {
     let js_props = js_from_serde(&props)?;
-    let result = sys::browser.tabs().create(object_from_js(&js_props)?).await;
+    let result = tabs().create(object_from_js(&js_props)?).await;
     serde_from_js_result(result)
 }
 

@@ -1,3 +1,5 @@
+//! Wrapper for the [`browser.contextualIdentities` API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contextualIdentities).
+
 use crate::{
     util::{js_from_serde, object_from_js, serde_from_js_result},
     Error,
