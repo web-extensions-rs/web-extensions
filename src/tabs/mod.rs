@@ -47,9 +47,6 @@ mod status;
 mod tab;
 mod window_type;
 
-#[cfg(test)]
-mod tests;
-
 pub use self::{
     muted_info::*, on_activated::*, on_attached::*, on_created::*, on_detached::*,
     on_highlighted::*, on_moved::*, on_removed::*, on_replaced::*, on_updated::*,
