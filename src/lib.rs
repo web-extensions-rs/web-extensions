@@ -5,6 +5,8 @@ mod util;
 pub use crate::error::*;
 
 pub mod bookmarks;
-pub mod contextual_identities;
 pub mod history;
 pub mod tabs;
+
+#[cfg(feature = "firefox")]
+pub mod contextual_identities;

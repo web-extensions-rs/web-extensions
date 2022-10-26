@@ -28,3 +28,7 @@ web-extensions-sys = "0.3.2"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.33"
+
+[features]
+default = []
+firefox = []
