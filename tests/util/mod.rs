@@ -33,6 +33,7 @@ pub struct JSONSerdeTestCase<'a, T> {
     pub json: &'a str,
 }
 
+#[allow(dead_code)]
 pub fn assert_json_serialize_test_cases<'a, T, I>(tcs: I)
 where
     T: 'a + serde::Serialize + PartialEq + Debug,

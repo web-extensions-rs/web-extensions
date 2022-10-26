@@ -1,5 +1,7 @@
-use super::*;
-use crate::test_util::*;
+use web_extensions::tabs::*;
+
+mod util;
+use util::*;
 
 #[test]
 fn status_serde() {
