@@ -5,6 +5,7 @@ mod util;
 pub use crate::error::*;
 
 pub mod bookmarks;
+pub mod downloads;
 pub mod history;
 pub mod tabs;
 
