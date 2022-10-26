@@ -1,4 +1,5 @@
 use super::prelude::*;
+use gloo_utils::format::JsValueSerdeExt;
 
 /// <https://developer.chrome.com/docs/extensions/reference/tabs/#event-onHighlighted>
 pub fn on_highlighted() -> OnHighlighted {

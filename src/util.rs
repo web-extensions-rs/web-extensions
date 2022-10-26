@@ -1,4 +1,5 @@
 use crate::error::Error;
+use gloo_utils::format::JsValueSerdeExt;
 use js_sys::Object;
 use wasm_bindgen::prelude::*;
 
