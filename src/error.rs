@@ -1,3 +1,4 @@
+use gloo_utils::format::JsValueSerdeExt;
 use thiserror::Error;
 use wasm_bindgen::{convert::FromWasmAbi, describe::WasmDescribe, prelude::*};
 
