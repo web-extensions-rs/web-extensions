@@ -1,3 +1,5 @@
+//! Wrapper for the [`chrome.history` API](https://developer.chrome.com/docs/extensions/reference/history/).
+
 use crate::{util::*, Error};
 use serde::{Deserialize, Serialize};
 use web_extensions_sys as sys;
@@ -12,6 +14,7 @@ pub async fn search(query: &Query<'_>) -> Result<Vec<HistoryItem>, Error> {
     serde_from_js(js_value)
 }
 
+/// <https://developer.chrome.com/docs/extensions/reference/history/#type-search-query>
 #[derive(Default, Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Query<'a> {
