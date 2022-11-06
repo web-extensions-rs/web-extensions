@@ -59,7 +59,8 @@ pub struct HistoryItem {
     pub id: String,
 
     /// When this page was last loaded, represented in milliseconds since the epoch.
-    pub last_visit_time: Option<i64>,
+    // NOTE: chrome returns floating point values, so i64 does not work here.
+    pub last_visit_time: Option<f64>,
 
     /// The title of the page when it was last loaded.
     pub title: Option<String>,
