@@ -47,7 +47,7 @@ pub struct BookmarkTreeNode {
     pub id: String,
 
     /// An ordered list of children of this node.
-    pub children: Vec<Self>,
+    pub children: Option<Vec<Self>>,
 
     /// The 0-based position of this node within its parent folder.
     pub index: Option<u32>,
