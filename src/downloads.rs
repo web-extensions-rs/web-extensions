@@ -8,7 +8,7 @@ use web_extensions_sys as sys;
 /// <https://developer.chrome.com/docs/extensions/reference/downloads/#method-search>
 pub async fn search(query: &Query<'_>) -> Result<Vec<DownloadItem>, Error> {
     let js_query = js_from_serde(query)?;
-    let js_value = sys::chrome.downloads().search(&js_query).await?;
+    let js_value = sys::chrome().downloads().search(&js_query).await?;
     serde_from_js(js_value)
 }
 
