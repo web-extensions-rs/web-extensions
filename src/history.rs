@@ -7,7 +7,7 @@ use web_extensions_sys as sys;
 /// <https://developer.chrome.com/docs/extensions/reference/history/#method-search>
 pub async fn search(query: &Query<'_>) -> Result<Vec<HistoryItem>, Error> {
     let js_query = js_from_serde(query)?;
-    let js_value = sys::chrome
+    let js_value = sys::chrome()
         .history()
         .search(object_from_js(&js_query)?)
         .await;
