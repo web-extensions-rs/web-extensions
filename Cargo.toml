@@ -1,9 +1,9 @@
 [package]
 name = "web-extensions"
-version = "0.2.1"
+version = "0.3.0"
 authors = [
-  "Roman Volosatovs <rvolosatovs@riseup.net>",
   "Markus Kohlhase <markus.kohlhase@slowtec.de>",
+  "Roman Volosatovs <rvolosatovs@riseup.net>",
 ]
 edition = "2021"
 description = "This crate provides wrappers around WebExtensions API"
