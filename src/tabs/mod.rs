@@ -30,6 +30,12 @@ impl From<i32> for TabId {
     }
 }
 
+impl From<TabId> for i32 {
+    fn from(id: TabId) -> Self {
+        id.0
+    }
+}
+
 mod on_activated;
 mod on_attached;
 mod on_created;
@@ -92,4 +98,39 @@ pub async fn create(props: CreateProperties<'_>) -> Result<Tab, Error> {
 pub struct CreateProperties<'a> {
     pub active: bool,
     pub url: &'a str,
+}
+
+/// Modifies the properties of a tab.
+///
+/// Properties that are not specified in updateProperties are not modified.
+///
+/// <https://developer.chrome.com/docs/extensions/reference/tabs/#method-update>
+pub async fn update(tab_id: Option<TabId>, props: UpdateProperties<'_>) -> Result<Tab, Error> {
+    let js_props = js_from_serde(&props)?;
+    let result = tabs()
+        .update(tab_id.map(|id| id.0), object_from_js(&js_props)?)
+        .await;
+    serde_from_js_result(result)
+}
+
+/// Information necessary to open a new tab.
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateProperties<'a> {
+    /// Whether the tab should be active.
+    pub active: Option<bool>,
+    /// Whether the tab should be discarded automatically by the browser when resources are low.
+    pub auto_discardable: Option<bool>,
+    /// Adds or removes the tab from the current selection.
+    pub highlighted: Option<bool>,
+    /// Whether the tab should be muted.
+    pub muted: Option<bool>,
+    /// The ID of the tab that opened this tab.
+    pub opener_tab_id: Option<TabId>,
+    /// Whether the tab should be pinned.
+    pub pinned: Option<bool>,
+    /// Whether the tab should be selected.
+    pub selected: Option<bool>,
+    /// A URL to navigate the tab to.
+    pub url: Option<&'a str>,
 }
