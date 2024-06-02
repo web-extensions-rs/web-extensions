@@ -12,7 +12,10 @@ pub(crate) mod prelude {
         //
         // Once MV3 is supported by FireFox, we need to check if we can use the same namespace,
         // a shim or our own implementation.
-        sys::chrome().tabs()
+        #[cfg(feature = "firefox")]
+        return sys::browser().tabs();
+        #[cfg(not(feature = "firefox"))]
+        return sys::chrome().tabs();
     }
 }
 

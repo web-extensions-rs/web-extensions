@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use web_extensions_sys::{browser, ContextualIdentities};
 
 fn contextual_identities() -> ContextualIdentities {
-    browser.contextual_identities()
+    browser().contextual_identities()
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
