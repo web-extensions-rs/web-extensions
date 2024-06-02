@@ -6,9 +6,18 @@ use super::{prelude::*, Status};
 pub struct Tab {
     pub active: bool,
     pub audible: Option<bool>,
+    #[cfg(feature = "firefox")]
+    pub auto_discardable: Option<bool>,
+    #[cfg(not(feature = "firefox"))]
     pub auto_discardable: bool,
+    #[cfg(feature = "firefox")]
+    pub discarded: Option<bool>,
+    #[cfg(not(feature = "firefox"))]
     pub discarded: bool,
     pub fav_icon_url: Option<String>,
+    #[cfg(feature = "firefox")]
+    pub group_id: Option<i32>,
+    #[cfg(not(feature = "firefox"))]
     pub group_id: i32,
     pub height: Option<u32>,
     pub highlighted: bool,

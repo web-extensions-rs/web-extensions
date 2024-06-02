@@ -1,8 +1,9 @@
+#[cfg(feature = "firefox")]
 use web_extensions::contextual_identities::*;
-
 mod util;
 use util::*;
 
+#[cfg(feature = "firefox")]
 #[test]
 fn color_serde() {
     assert_json_serde_test_cases(&[
@@ -45,6 +46,7 @@ fn color_serde() {
     ])
 }
 
+#[cfg(feature = "firefox")]
 #[test]
 fn icon_serde() {
     assert_json_serde_test_cases(&[
