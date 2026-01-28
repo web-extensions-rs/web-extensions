@@ -17,7 +17,7 @@ impl OnRemovedEventListener<'_> {
 }
 
 impl OnRemoved {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnRemovedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnRemovedEventListener<'_>
     where
         L: FnMut(TabId, RemoveInfo) + 'static,
     {

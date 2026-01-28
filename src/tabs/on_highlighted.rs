@@ -18,7 +18,7 @@ impl OnHighlightedEventListener<'_> {
 }
 
 impl OnHighlighted {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnHighlightedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnHighlightedEventListener<'_>
     where
         L: FnMut(HighlightInfo) + 'static,
     {

@@ -17,7 +17,7 @@ impl OnReplacedEventListener<'_> {
 }
 
 impl OnReplaced {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnReplacedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnReplacedEventListener<'_>
     where
         L: FnMut(ReplaceInfo) + 'static,
     {

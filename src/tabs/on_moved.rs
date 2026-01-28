@@ -17,7 +17,7 @@ impl OnMovedEventListener<'_> {
 }
 
 impl OnMoved {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnMovedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnMovedEventListener<'_>
     where
         L: FnMut(TabId, MoveInfo) + 'static,
     {

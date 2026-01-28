@@ -20,7 +20,7 @@ impl OnUpdatedEventListener<'_> {
 }
 
 impl OnUpdated {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnUpdatedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnUpdatedEventListener<'_>
     where
         L: FnMut(TabId, ChangeInfo, Tab) + 'static,
     {

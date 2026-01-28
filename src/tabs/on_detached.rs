@@ -17,7 +17,7 @@ impl OnDetachedEventListener<'_> {
 }
 
 impl OnDetached {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnDetachedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnDetachedEventListener<'_>
     where
         L: FnMut(i32, DetachInfo) + 'static,
     {

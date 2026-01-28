@@ -17,7 +17,7 @@ impl OnCreatedEventListener<'_> {
 }
 
 impl OnCreated {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnCreatedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnCreatedEventListener<'_>
     where
         L: FnMut(Tab) + 'static,
     {

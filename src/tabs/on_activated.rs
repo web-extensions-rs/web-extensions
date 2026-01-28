@@ -18,7 +18,7 @@ impl OnActivatedEventListener<'_> {
 }
 
 impl OnActivated {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnActivatedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnActivatedEventListener<'_>
     where
         L: FnMut(ActiveInfo) + 'static,
     {

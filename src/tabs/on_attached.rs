@@ -17,7 +17,7 @@ impl OnAttachedEventListener<'_> {
 }
 
 impl OnAttached {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnAttachedEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnAttachedEventListener<'_>
     where
         L: FnMut(TabId, AttachInfo) + 'static,
     {

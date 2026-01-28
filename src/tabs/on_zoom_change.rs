@@ -17,7 +17,7 @@ impl OnZoomChangeEventListener<'_> {
 }
 
 impl OnZoomChange {
-    pub fn add_listener<L>(&self, mut listener: L) -> OnZoomChangeEventListener
+    pub fn add_listener<L>(&self, mut listener: L) -> OnZoomChangeEventListener<'_>
     where
         L: FnMut(ZoomChangeInfo) + 'static,
     {
