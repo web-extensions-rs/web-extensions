@@ -1,10 +1,11 @@
 [package]
 name = "web-extensions"
-version = "0.3.0"
+version = "0.4.0"
 authors = [
   "Markus Kohlhase <markus.kohlhase@slowtec.de>",
   "Roman Volosatovs <rvolosatovs@riseup.net>",
 ]
+rust-version = "1.71"
 edition = "2021"
 description = "This crate provides wrappers around WebExtensions API"
 repository = "https://github.com/rvolosatovs/web-extensions"
@@ -16,18 +17,18 @@ categories = ["api-bindings", "wasm"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-gloo-utils = "0.1.5"
-js-sys = "0.3.60"
-serde = { version = "1.0.147", features = ["derive"] }
-serde_derive = "1.0.147"
-serde_json = "1.0.87"
-thiserror = "1.0.37"
-wasm-bindgen = "0.2.83"
-wasm-bindgen-futures = "0.4.33"
+gloo-utils = "0.2.0"
+js-sys = "0.3.85"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_derive = "1.0.228"
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+wasm-bindgen = "0.2.108"
+wasm-bindgen-futures = "0.4.58"
 web-extensions-sys = "0.4.2"
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.33"
+wasm-bindgen-test = "0.3.58"
 
 [features]
 default = []
