@@ -8,6 +8,7 @@ pub mod bookmarks;
 pub mod cookies;
 pub mod downloads;
 pub mod history;
+pub mod omnibox;
 pub mod tabs;
 
 #[cfg(feature = "firefox")]

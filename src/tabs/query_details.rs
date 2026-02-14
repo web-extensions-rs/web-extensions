@@ -1,7 +1,7 @@
 use super::{prelude::*, Status, WindowType};
 
 /// <https://developer.chrome.com/docs/extensions/reference/tabs/#type-query-queryInfo>
-#[derive(Debug, Serialize)]
+#[derive(Default, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryDetails<'a> {
     pub active: Option<bool>,

@@ -1,3 +1,5 @@
+#![cfg(feature = "firefox")]
+
 use web_extensions::contextual_identities::*;
 
 mod util;
